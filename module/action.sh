@@ -111,6 +111,15 @@ for config in $spoofConfig; do
 	fi
 done
 
+#解析发布日期和估算过期
+REL_DATE_RAW=$(grep -m1 -A1 'Release date' PIXEL_OTA_HTML | tail -n1 | sed 's;.*<td>\(.*\)</td>.*;\1;')
+REL_DATE_FIXED=$(echo "$REL_DATE_RAW" | sed 's/ \([0-9],\)/ 0\1/')
+
+BETA_REL_DATE=$(date -D '%B %e, %Y' -d "$REL_DATE_RAW" +%Y-%m-%d 2>/dev/null)
+[ -z "$BETA_REL_DATE" ] && BETA_REL_DATE=$(date -D '%B %d, %Y' -d "$REL_DATE_FIXED" +%Y-%m-%d)
+
+BETA_EXP_DATE=$(date -D '%s' -d "$(($(date -D '%Y-%m-%d' -d "$BETA_REL_DATE" +%s) + 3628800))" +%Y-%m-%d)
+
 echo "- Dumping values to pif.json ..."
 cat <<EOF | tee pif.json
 {
@@ -122,7 +131,9 @@ cat <<EOF | tee pif.json
   "spoofProps": $spoofProps,
   "spoofSignature": $spoofSignature,
   "DEBUG": $DEBUG,
-  "spoofVendingSdk": $spoofVendingSdk
+  "spoofVendingSdk": $spoofVendingSdk,
+  "// BETA_RELEASE_DATE": "$BETA_REL_DATE",
+  "// ESTIMATED_EXPIRY": "$BETA_EXP_DATE"
 }
 EOF
 
