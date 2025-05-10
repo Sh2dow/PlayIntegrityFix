@@ -1,6 +1,6 @@
 id=playintegrityfix
 name=Play Integrity Fix [manual]
-version=v3-inject-manual-advanced
+version=advanced-manual
 versionCode=4
 author=chiteroman, KOWX712, Byemaxx
 description=Universal modular fix for Play Integrity (and SafetyNet) on devices running Android 8-15
