@@ -200,7 +200,12 @@ public final class EntryPoint {
 
         Log.i(TAG, "Parsed " + map.size() + " fields from JSON");
 
-        spoofFields();
+        if (spoofProps) {
+            spoofFields();
+            Log.i(TAG, "Applied field spoofing because spoofProps is enabled");
+        } else {
+            Log.i(TAG, "Skipped field spoofing because spoofProps is disabled");
+        }
     }
 
     public static void spoofFields() {

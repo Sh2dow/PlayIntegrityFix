@@ -358,7 +358,12 @@ init(JavaVM *vm, const std::string &gmsDir, bool isGmsUnstable, bool isVending) 
     parseJSON();
 
     if (isGmsUnstable) {
-        UpdateBuildFields();
+        if (spoofProps) {
+            UpdateBuildFields();
+            LOGD("[INJECT] Updated build fields because spoofProps is enabled");
+        } else {
+            LOGD("[INJECT] Skipped updating build fields because spoofProps is disabled");
+        }
 
         if (spoofProvider || spoofSignature) {
             injectDex();
