@@ -9,12 +9,18 @@ const spoofPropsToggle = document.getElementById('toggle-spoofProps');
 const spoofSignatureToggle = document.getElementById('toggle-spoofSignature');
 const debugToggle = document.getElementById('toggle-debug');
 const spoofVendingSdkToggle = document.getElementById('toggle-sdk-vending');
+const interceptDroidGuardToggle = document.getElementById('toggle-interceptDroidGuard');
+const interceptPropReadToggle = document.getElementById('toggle-interceptPropRead');
+const bypassHiddenApiToggle = document.getElementById('toggle-bypassHiddenApi');
 const spoofConfig = [
     { container: "spoofProvider-toggle-container", toggle: spoofProviderToggle, type: 'spoofProvider' },
     { container: "spoofProps-toggle-container", toggle: spoofPropsToggle, type: 'spoofProps' },
     { container: "spoofSignature-toggle-container", toggle: spoofSignatureToggle, type: 'spoofSignature' },
     { container: "debug-toggle-container", toggle: debugToggle, type: 'DEBUG' },
-    { container: "sdk-vending-toggle-container", toggle: spoofVendingSdkToggle, type: 'spoofVendingSdk' }
+    { container: "sdk-vending-toggle-container", toggle: spoofVendingSdkToggle, type: 'spoofVendingSdk' },
+    { container: "interceptDroidGuard-toggle-container", toggle: interceptDroidGuardToggle, type: 'interceptDroidGuard' },
+    { container: "interceptPropRead-toggle-container", toggle: interceptPropReadToggle, type: 'interceptPropRead' },
+    { container: "bypassHiddenApi-toggle-container", toggle: bypassHiddenApiToggle, type: 'bypassHiddenApi' }
 ];
 
 // Execute shell commands with ksu.exec
@@ -120,6 +126,9 @@ async function loadSpoofConfig() {
         spoofSignatureToggle.checked = config.spoofSignature;
         debugToggle.checked = config.DEBUG;
         spoofVendingSdkToggle.checked = config.spoofVendingSdk;
+        interceptDroidGuardToggle.checked = config.interceptDroidGuard;
+        interceptPropReadToggle.checked = config.interceptPropRead;
+        bypassHiddenApiToggle.checked = config.bypassHiddenApi;
     } catch (error) {
         appendToOutput(`[!] Failed to load spoof config`);
         console.error(`Failed to load spoof config:`, error);
@@ -137,9 +146,65 @@ function setupSpoofConfigButton(container, toggle, type) {
                 [ ! -f /data/adb/pif.json ] || echo "/data/adb/pif.json"
             `);
             const files = pifFile.split('\n').filter(line => line.trim() !== '');
-            for (const line of files) {
-                await updateSpoofConfig(toggle, type, line.trim());
+            
+            // 特殊处理：当开启spoofProps时，自动开启interceptPropRead
+            if (type === 'spoofProps' && !toggle.checked) {
+                // 将要开启spoofProps
+                for (const line of files) {
+                    const pifJson = await execCommand(`cat ${line.trim()}`);
+                    const config = JSON.parse(pifJson);
+                    
+                    // 更新spoofProps
+                    config[type] = true;
+                    
+                    // 同时更新interceptPropRead
+                    config['interceptPropRead'] = true;
+                    
+                    const newPifJson = JSON.stringify(config, null, 2);
+                    await execCommand(`echo '${newPifJson}' > ${line.trim()}`);
+                }
+                // 更新UI状态
+                interceptPropReadToggle.checked = true;
+                appendToOutput(`[+] Automatically enabled interceptPropRead because spoofProps was enabled`);
+            } 
+            // 当关闭spoofProps时，询问是否也关闭interceptPropRead
+            else if (type === 'spoofProps' && toggle.checked) {
+                // 正常处理关闭spoofProps
+                for (const line of files) {
+                    await updateSpoofConfig(toggle, type, line.trim());
+                }
+                
+                // 提示用户考虑关闭interceptPropRead
+                appendToOutput(`[i] You may want to disable interceptPropRead as well since spoofProps is now disabled`);
             }
+            // 当尝试关闭interceptPropRead但spoofProps仍然开启时，阻止操作
+            else if (type === 'interceptPropRead' && toggle.checked) {
+                // 获取当前spoofProps状态
+                const firstFile = files[0];
+                if (firstFile) {
+                    const pifJson = await execCommand(`cat ${firstFile}`);
+                    const config = JSON.parse(pifJson);
+                    
+                    if (config.spoofProps === true) {
+                        // spoofProps开启时不允许关闭interceptPropRead
+                        appendToOutput(`[!] Cannot disable interceptPropRead while spoofProps is enabled`);
+                        shellRunning = false;
+                        return;
+                    }
+                }
+                
+                // 正常处理关闭interceptPropRead
+                for (const line of files) {
+                    await updateSpoofConfig(toggle, type, line.trim());
+                }
+            }
+            else {
+                // 正常处理其他开关
+                for (const line of files) {
+                    await updateSpoofConfig(toggle, type, line.trim());
+                }
+            }
+            
             execCommand(`
                 killall com.google.android.gms.unstable || true
                 killall com.android.vending || true

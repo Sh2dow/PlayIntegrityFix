@@ -15,6 +15,9 @@ static bool isVending = false;
 static nlohmann::json json;
 
 static bool spoofProps = true, spoofProvider = true, spoofSignature = false;
+static bool interceptDroidGuard = false;
+static bool interceptPropRead = false;
+static bool bypassHiddenApi = false;
 
 static bool DEBUG = false;
 static std::string DEVICE_INITIAL_SDK_INT = "21", SECURITY_PATCH, BUILD_ID;
@@ -170,6 +173,21 @@ static void parseJSON() {
         spoofSignature = json["spoofSignature"].get<bool>();
         json.erase("spoofSignature");
     }
+    
+    if (json.contains("interceptDroidGuard") && json["interceptDroidGuard"].is_boolean()) {
+        interceptDroidGuard = json["interceptDroidGuard"].get<bool>();
+        json.erase("interceptDroidGuard");
+    }
+    
+    if (json.contains("interceptPropRead") && json["interceptPropRead"].is_boolean()) {
+        interceptPropRead = json["interceptPropRead"].get<bool>();
+        json.erase("interceptPropRead");
+    }
+    
+    if (json.contains("bypassHiddenApi") && json["bypassHiddenApi"].is_boolean()) {
+        bypassHiddenApi = json["bypassHiddenApi"].get<bool>();
+        json.erase("bypassHiddenApi");
+    }
 
     if (json.contains("DEBUG") && json["DEBUG"].is_boolean()) {
         DEBUG = json["DEBUG"].get<bool>();
@@ -299,10 +317,10 @@ static void injectDex() {
 
     LOGD("call init");
     auto entryInit = env->GetStaticMethodID(entryPointClass, "init",
-                                            "(Ljava/lang/String;ZZ)V");
+                                            "(Ljava/lang/String;ZZZZZ)V");
     auto jsonStr = env->NewStringUTF(json.dump().c_str());
     env->CallStaticVoidMethod(entryPointClass, entryInit, jsonStr, spoofProvider,
-                              spoofSignature);
+                              spoofSignature, spoofProps, interceptDroidGuard, bypassHiddenApi);
 
     if (env->ExceptionCheck()) {
         env->ExceptionDescribe();
@@ -348,7 +366,7 @@ init(JavaVM *vm, const std::string &gmsDir, bool isGmsUnstable, bool isVending) 
             LOGD("[INJECT] Dex file won't be injected due spoofProvider and spoofSignature are false");
         }
 
-        if (spoofProps) {
+        if (spoofProps && interceptPropRead) {
             return !doHook();
         }
     } else if (isVending && spoofVendingSdk) {
