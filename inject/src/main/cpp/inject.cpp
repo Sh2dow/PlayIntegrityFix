@@ -15,7 +15,6 @@ static bool isVending = false;
 static nlohmann::json json;
 
 static bool spoofProps = true, spoofProvider = true, spoofSignature = false;
-static bool interceptDroidGuard = false;
 static bool interceptPropRead = false;
 
 static bool DEBUG = false;
@@ -173,11 +172,6 @@ static void parseJSON() {
         json.erase("spoofSignature");
     }
     
-    if (json.contains("interceptDroidGuard") && json["interceptDroidGuard"].is_boolean()) {
-        interceptDroidGuard = json["interceptDroidGuard"].get<bool>();
-        json.erase("interceptDroidGuard");
-    }
-    
     if (json.contains("interceptPropRead") && json["interceptPropRead"].is_boolean()) {
         interceptPropRead = json["interceptPropRead"].get<bool>();
         json.erase("interceptPropRead");
@@ -311,10 +305,10 @@ static void injectDex() {
 
     LOGD("call init");
     auto entryInit = env->GetStaticMethodID(entryPointClass, "init",
-                                          "(Ljava/lang/String;ZZZZ)V");
+                                          "(Ljava/lang/String;ZZZ)V");
     auto jsonStr = env->NewStringUTF(json.dump().c_str());
     env->CallStaticVoidMethod(entryPointClass, entryInit, jsonStr, spoofProvider,
-                            spoofSignature, spoofProps, interceptDroidGuard);
+                            spoofSignature, spoofProps);
 
     if (env->ExceptionCheck()) {
         env->ExceptionDescribe();

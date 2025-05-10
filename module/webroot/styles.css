@@ -112,6 +112,12 @@ body {
     user-select: none;
 }
 
+.toggle-text small {
+    font-weight: normal;
+    font-size: 80%;
+    opacity: 0.7;
+}
+
 .toggle-switch {
     position: relative;
     display: inline-block;

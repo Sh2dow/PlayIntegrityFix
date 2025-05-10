@@ -26,7 +26,6 @@ import java.util.Objects;
 public final class EntryPoint {
     public static final String TAG = "PIF";
     private static final Map<Field, String> map = new HashMap<>();
-    public static boolean interceptDroidGuard = false;
     private static final String signatureData = """
             MIIFyTCCA7GgAwIBAgIVALyxxl+zDS9SL68SzOr48309eAZyMA0GCSqGSIb3DQEBCwUAMHQxCzAJ
             BgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQw
@@ -78,6 +77,8 @@ public final class EntryPoint {
 
         Security.removeProvider("AndroidKeyStore");
         Security.insertProviderAt(customProvider, 1);
+        
+        Log.i(TAG, "Provider spoofed, DroidGuard requests will be intercepted");
     }
 
     private static void spoofSignature() {
@@ -154,9 +155,7 @@ public final class EntryPoint {
         return field;
     }
 
-    public static void init(String json, boolean spoofProvider, boolean spoofSignature, boolean spoofProps, boolean interceptDroidGuard) {
-        EntryPoint.interceptDroidGuard = interceptDroidGuard;
-        
+    public static void init(String json, boolean spoofProvider, boolean spoofSignature, boolean spoofProps) {
         if (spoofProvider) {
             spoofProvider();
         } else {

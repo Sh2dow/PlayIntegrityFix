@@ -26,12 +26,12 @@ public final class CustomKeyStoreSpi extends KeyStoreSpi {
 
     @Override
     public Certificate[] engineGetCertificateChain(String alias) {
-        if (EntryPoint.interceptDroidGuard) {
-            for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
-                if (stackTraceElement.getClassName().toLowerCase(Locale.US).contains("droidguard")) {
-                    Log.w(EntryPoint.TAG, "DroidGuard invoke engineGetCertificateChain! Throwing exception...");
-                    throw new UnsupportedOperationException();
-                }
+        // 这个方法只有在spoofProvider启用时才会被调用
+        // 自动拦截DroidGuard请求，不再需要单独的开关
+        for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+            if (stackTraceElement.getClassName().toLowerCase(Locale.US).contains("droidguard")) {
+                Log.w(EntryPoint.TAG, "DroidGuard invoke engineGetCertificateChain! Throwing exception...");
+                throw new UnsupportedOperationException();
             }
         }
         return keyStoreSpi.engineGetCertificateChain(alias);

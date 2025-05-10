@@ -8,6 +8,5 @@
   "spoofProps": false,
   "DEBUG": false,
   "spoofVendingSdk": false,
-  "interceptDroidGuard": false,
   "interceptPropRead": false
 }

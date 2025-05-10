@@ -9,7 +9,6 @@ const spoofPropsToggle = document.getElementById('toggle-spoofProps');
 const spoofSignatureToggle = document.getElementById('toggle-spoofSignature');
 const debugToggle = document.getElementById('toggle-debug');
 const spoofVendingSdkToggle = document.getElementById('toggle-sdk-vending');
-const interceptDroidGuardToggle = document.getElementById('toggle-interceptDroidGuard');
 const interceptPropReadToggle = document.getElementById('toggle-interceptPropRead');
 const spoofConfig = [
     { container: "spoofProvider-toggle-container", toggle: spoofProviderToggle, type: 'spoofProvider' },
@@ -17,7 +16,6 @@ const spoofConfig = [
     { container: "spoofSignature-toggle-container", toggle: spoofSignatureToggle, type: 'spoofSignature' },
     { container: "debug-toggle-container", toggle: debugToggle, type: 'DEBUG' },
     { container: "sdk-vending-toggle-container", toggle: spoofVendingSdkToggle, type: 'spoofVendingSdk' },
-    { container: "interceptDroidGuard-toggle-container", toggle: interceptDroidGuardToggle, type: 'interceptDroidGuard' },
     { container: "interceptPropRead-toggle-container", toggle: interceptPropReadToggle, type: 'interceptPropRead' }
 ];
 
@@ -124,8 +122,8 @@ async function loadSpoofConfig() {
         spoofSignatureToggle.checked = config.spoofSignature;
         debugToggle.checked = config.DEBUG;
         spoofVendingSdkToggle.checked = config.spoofVendingSdk;
-        interceptDroidGuardToggle.checked = config.interceptDroidGuard;
         interceptPropReadToggle.checked = config.interceptPropRead;
+        
     } catch (error) {
         appendToOutput(`[!] Failed to load spoof config`);
         console.error(`Failed to load spoof config:`, error);
@@ -196,7 +194,6 @@ function setupSpoofConfigButton(container, toggle, type) {
                 }
             }
             else {
-                // 正常处理其他开关
                 for (const line of files) {
                     await updateSpoofConfig(toggle, type, line.trim());
                 }
