@@ -9,6 +9,5 @@
   "DEBUG": false,
   "spoofVendingSdk": false,
   "interceptDroidGuard": false,
-  "interceptPropRead": false,
-  "bypassHiddenApi": false
+  "interceptPropRead": false
 }

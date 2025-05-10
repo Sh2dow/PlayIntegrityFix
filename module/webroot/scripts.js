@@ -11,7 +11,6 @@ const debugToggle = document.getElementById('toggle-debug');
 const spoofVendingSdkToggle = document.getElementById('toggle-sdk-vending');
 const interceptDroidGuardToggle = document.getElementById('toggle-interceptDroidGuard');
 const interceptPropReadToggle = document.getElementById('toggle-interceptPropRead');
-const bypassHiddenApiToggle = document.getElementById('toggle-bypassHiddenApi');
 const spoofConfig = [
     { container: "spoofProvider-toggle-container", toggle: spoofProviderToggle, type: 'spoofProvider' },
     { container: "spoofProps-toggle-container", toggle: spoofPropsToggle, type: 'spoofProps' },
@@ -19,8 +18,7 @@ const spoofConfig = [
     { container: "debug-toggle-container", toggle: debugToggle, type: 'DEBUG' },
     { container: "sdk-vending-toggle-container", toggle: spoofVendingSdkToggle, type: 'spoofVendingSdk' },
     { container: "interceptDroidGuard-toggle-container", toggle: interceptDroidGuardToggle, type: 'interceptDroidGuard' },
-    { container: "interceptPropRead-toggle-container", toggle: interceptPropReadToggle, type: 'interceptPropRead' },
-    { container: "bypassHiddenApi-toggle-container", toggle: bypassHiddenApiToggle, type: 'bypassHiddenApi' }
+    { container: "interceptPropRead-toggle-container", toggle: interceptPropReadToggle, type: 'interceptPropRead' }
 ];
 
 // Execute shell commands with ksu.exec
@@ -128,7 +126,6 @@ async function loadSpoofConfig() {
         spoofVendingSdkToggle.checked = config.spoofVendingSdk;
         interceptDroidGuardToggle.checked = config.interceptDroidGuard;
         interceptPropReadToggle.checked = config.interceptPropRead;
-        bypassHiddenApiToggle.checked = config.bypassHiddenApi;
     } catch (error) {
         appendToOutput(`[!] Failed to load spoof config`);
         console.error(`Failed to load spoof config:`, error);

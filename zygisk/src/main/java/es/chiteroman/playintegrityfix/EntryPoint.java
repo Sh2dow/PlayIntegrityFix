@@ -27,7 +27,6 @@ public final class EntryPoint {
     public static final String TAG = "PIF";
     private static final Map<Field, String> map = new HashMap<>();
     public static boolean interceptDroidGuard = false;
-    public static boolean bypassHiddenApi = false;
     private static final String signatureData = """
             MIIFyTCCA7GgAwIBAgIVALyxxl+zDS9SL68SzOr48309eAZyMA0GCSqGSIb3DQEBCwUAMHQxCzAJ
             BgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQw
@@ -94,8 +93,9 @@ public final class EntryPoint {
             Log.e(TAG, "Couldn't replace PackageInfoCreator: " + e);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && bypassHiddenApi) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             HiddenApiBypass.addHiddenApiExemptions("Landroid/os/Parcel;", "Landroid/content/pm", "Landroid/app");
+            Log.i(TAG, "Added hidden API exemptions for Android P+ devices");
         }
 
         try {
@@ -154,9 +154,8 @@ public final class EntryPoint {
         return field;
     }
 
-    public static void init(String json, boolean spoofProvider, boolean spoofSignature, boolean spoofProps, boolean interceptDroidGuard, boolean bypassHiddenApi) {
+    public static void init(String json, boolean spoofProvider, boolean spoofSignature, boolean spoofProps, boolean interceptDroidGuard) {
         EntryPoint.interceptDroidGuard = interceptDroidGuard;
-        EntryPoint.bypassHiddenApi = bypassHiddenApi;
         
         if (spoofProvider) {
             spoofProvider();

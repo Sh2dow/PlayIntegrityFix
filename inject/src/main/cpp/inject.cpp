@@ -17,7 +17,6 @@ static nlohmann::json json;
 static bool spoofProps = true, spoofProvider = true, spoofSignature = false;
 static bool interceptDroidGuard = false;
 static bool interceptPropRead = false;
-static bool bypassHiddenApi = false;
 
 static bool DEBUG = false;
 static std::string DEVICE_INITIAL_SDK_INT = "21", SECURITY_PATCH, BUILD_ID;
@@ -184,11 +183,6 @@ static void parseJSON() {
         json.erase("interceptPropRead");
     }
     
-    if (json.contains("bypassHiddenApi") && json["bypassHiddenApi"].is_boolean()) {
-        bypassHiddenApi = json["bypassHiddenApi"].get<bool>();
-        json.erase("bypassHiddenApi");
-    }
-
     if (json.contains("DEBUG") && json["DEBUG"].is_boolean()) {
         DEBUG = json["DEBUG"].get<bool>();
         json.erase("DEBUG");
@@ -317,10 +311,10 @@ static void injectDex() {
 
     LOGD("call init");
     auto entryInit = env->GetStaticMethodID(entryPointClass, "init",
-                                            "(Ljava/lang/String;ZZZZZ)V");
+                                          "(Ljava/lang/String;ZZZZ)V");
     auto jsonStr = env->NewStringUTF(json.dump().c_str());
     env->CallStaticVoidMethod(entryPointClass, entryInit, jsonStr, spoofProvider,
-                              spoofSignature, spoofProps, interceptDroidGuard, bypassHiddenApi);
+                            spoofSignature, spoofProps, interceptDroidGuard);
 
     if (env->ExceptionCheck()) {
         env->ExceptionDescribe();
