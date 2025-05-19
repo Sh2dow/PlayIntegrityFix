@@ -92,11 +92,9 @@ body {
     margin-bottom: 0;
 }
 
-.advanced-option {
-    display: none;
-}
 
 #advanced {
+    display: none; /* 隐藏Advanced按钮 */
     justify-content: center;
 
     span {

@@ -53,18 +53,7 @@ function applyButtonEventListeners() {
             console.error('Failed to switch fingerprint type:', error);
         }
         shellRunning = false;
-    });
-
-    advanced.addEventListener('click', () => {
-        document.querySelectorAll('.advanced-option').forEach(option => {
-            option.style.display = 'flex';
-        });
-        advanced.style.display = 'none';
-        const lists = Array.from(document.querySelectorAll('.toggle-list'));
-        lists.forEach(list => list.style.borderBottom = '1px solid var(--border-color)');
-        const visibleLists = lists.filter(list => getComputedStyle(list).display !== 'none');
-        if (visibleLists.length > 0) visibleLists[visibleLists.length - 1].style.borderBottom = 'none';
-    });
+    });    // 已移除advanced按钮点击事件
     
 
     clearButton.addEventListener('click', () => {
@@ -373,4 +362,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadPreviewFingerprintConfig();
     applyButtonEventListeners();
     applyRippleEffect();
+    
+    const lists = Array.from(document.querySelectorAll('.toggle-list'));
+    lists.forEach(list => list.style.borderBottom = '1px solid var(--border-color)');
+    const visibleLists = lists.filter(list => getComputedStyle(list).display !== 'none');
+    if (visibleLists.length > 0) visibleLists[visibleLists.length - 1].style.borderBottom = 'none';
 });
