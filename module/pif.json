@@ -1,12 +1,11 @@
 {
-  "FINGERPRINT": "google/oriole_beta/oriole:16/BP22.250221.015/13278879:user/release-keys",
+  "FINGERPRINT": "google/raven_beta/raven:16/BP31.250502.008.A1/13572937:user/release-keys",
   "MANUFACTURER": "Google",
-  "MODEL": "Pixel 6",
-  "SECURITY_PATCH": "2025-03-05",
+  "MODEL": "Pixel 6 Pro",
+  "SECURITY_PATCH": "2025-05-05",
   "spoofProvider": false,
   "spoofSignature": false,
   "spoofProps": false,
   "DEBUG": false,
-  "spoofVendingSdk": false,
-  "interceptPropRead": false
+  "spoofVendingSdk": false
 }
