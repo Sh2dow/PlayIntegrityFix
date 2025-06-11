@@ -77,6 +77,8 @@ public final class EntryPoint {
 
         Security.removeProvider("AndroidKeyStore");
         Security.insertProviderAt(customProvider, 1);
+        
+        Log.i(TAG, "Provider spoofed, DroidGuard requests will be intercepted");
     }
 
     private static void spoofSignature() {
@@ -94,6 +96,7 @@ public final class EntryPoint {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             HiddenApiBypass.addHiddenApiExemptions("Landroid/os/Parcel;", "Landroid/content/pm", "Landroid/app");
+            Log.i(TAG, "Added hidden API exemptions for Android P+ devices");
         }
 
         try {
@@ -152,7 +155,7 @@ public final class EntryPoint {
         return field;
     }
 
-    public static void init(String json, boolean spoofProvider, boolean spoofSignature) {
+    public static void init(String json, boolean spoofProvider, boolean spoofSignature, boolean spoofProps) {
         if (spoofProvider) {
             spoofProvider();
         } else {
@@ -195,7 +198,12 @@ public final class EntryPoint {
 
         Log.i(TAG, "Parsed " + map.size() + " fields from JSON");
 
-        spoofFields();
+        if (spoofProps) {
+            spoofFields();
+            Log.i(TAG, "Applied field spoofing because spoofProps is enabled");
+        } else {
+            Log.i(TAG, "Skipped field spoofing because spoofProps is disabled");
+        }
     }
 
     public static void spoofFields() {

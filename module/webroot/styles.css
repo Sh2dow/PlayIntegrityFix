@@ -92,12 +92,28 @@ body {
     margin-bottom: 0;
 }
 
+
+#advanced {
+    display: none; /* 隐藏Advanced按钮 */
+    justify-content: center;
+
+    span {
+        font-weight: normal;
+    }
+}
+
 .toggle-text {
     font-size: 16px;
     font-weight: bold;
     white-space: wrap;
     max-width: calc(100% - 76px);
     user-select: none;
+}
+
+.toggle-text small {
+    font-weight: normal;
+    font-size: 80%;
+    opacity: 0.7;
 }
 
 .toggle-switch {
