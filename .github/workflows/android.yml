@@ -2,7 +2,7 @@ name: Android CI
 
 on:
   push:
-    branches: inject_manual
+    branches: master
     paths-ignore: '**.md'
   workflow_dispatch:
 
@@ -46,7 +46,7 @@ jobs:
       with:
         submodules: 'recursive'
         fetch-depth: 1
-        ref: inject_manual
+        ref: master
 
     - name: Set up JDK
       uses: actions/setup-java@v4
